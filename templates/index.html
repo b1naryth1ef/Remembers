@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sandy's Memorial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Remember those that lost their lives in Hurricane Sandy">
+    <meta name="author" content="B1naryTh1ef">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-lightbox.css" rel="stylesheet" >
+    <style type="text/css">
+      body {
+        color: white;
+        background-color: black;
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .cont {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="container-narrow">
+      {% for person in persons %}
+              <div id="light{{ loop.index }}" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
+                <div class='lightbox-content'>
+                  <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="" />
+                </div>
+              </div>
+      {% endfor %}
+      <div class="row-fluid">
+      <div class="row12">
+        <section id="examples">
+          <div class="page-header">
+            <h1 class="muted">Sandy's Memorial</h1>
+          </div>
+          <p class="lead">Take a momement to remember some of the great people that hurricane sandy tragically took from us.</p>
+          <ul class="thumbnails bootstrap-examples">
+            {% for person in persons %}
+              <li class="span3">
+                <a class="thumbnail" data-toggle="lightbox" href="#light{{ loop.index }}">
+                  <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="">
+                </a>
+                <h4>{{ person['name'] }}</h4>
+                <p>{{ person['shortbio'] }}</p>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+    </div>
+    </div> <!-- /container -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap-lightbox.js"></script>
+
+  </body>
+</html>

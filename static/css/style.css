@@ -1,0 +1,13 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+#alert_block {
+	padding: 1em 100px 0 100px;
+	margin-bottom: 0;
+}
+
+.footer p {
+	text-align: center;
+}
