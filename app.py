@@ -56,7 +56,6 @@ def getData(i):
                 li[v[0]] = v[1]
         li['name'] = i['title']['$t']
         result.append(li)
-    print result
     return result
 
 def reloadData(i): pass
@@ -81,7 +80,7 @@ def routeCreate():
     if not id:
         flash('The name is already taken! Try another one...')
         return redirect('/')
-    flash('Your memorial was added! Its viewable here: <b>http://memorial.hydr0.com/p/%s/</b>. Also, please make sure to write this number down: %s' % (id, key))
+    flash('Your memorial was added! Its viewable here: <b>http://memorial.hydr0.com/p/%s/</b>. Also, please make sure to write this number down: %s' % (id, key), 'success')
     return redirect('/p/%s' % id)
     #if not checkCaptcha:
     #    flash('Your captcha was incorrect! Try again!', 'error')
