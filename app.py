@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, flash, request
 from redis import Redis
-import requests, json, random, sys, os
+import requests, json, random, sys, os, re
 
 app = Flask(__name__)
 app.secret_key = 'rawr' #not using session, so doesnt need to be uber secret
 
-r = Redis(host='hydr0.com', db=2)
+r = Redis(host='hydr0.com', db=1)
 url = "http://spreadsheets.google.com/feeds/list/%s/1/public/basic?alt=json"
 orgurl = "https://docs.google.com/spreadsheet/ccc?key=%s"
 captcha_priv = os.getenv('CAPTCHAPRIV', None)
@@ -31,14 +31,15 @@ def checkCaptcha():
 def check(id): return requests.get(url % id).status_code == 200
 
 def addSite(title, desc, docid):
-    id = len([i for i in r.keys('memorial.*') if not i.endswith('.data')])+1
+    if r.exists('memorial.%s' % title.replace(' ', '_').lower()):
+        return None, None
     secret = random.randint(111111, 999999) #not really that secret, but screw it!
     s = {'docid': docid,
         'secret': secret,
         'title': title,
         'desc': desc}
-    r.hmset('memorial.%s' % id, s)
-    return id, secret
+    r.hmset('memorial.%s' % title.replace(' ', '_').lower(), s)
+    return title.replace(' ', '_').lower(), secret
 
 def getData(i):
     req = requests.get(url % i)
@@ -55,7 +56,7 @@ def getData(i):
                 li[v[0]] = v[1]
         li['name'] = i['title']['$t']
         result.append(li)
-
+    print result
     return result
 
 def reloadData(i): pass
@@ -66,14 +67,22 @@ def routeIndex():
 
 @app.route('/create', methods=['POST'])
 def routeCreate():
-    print request.form
     for i in ['title', 'docid', 'desc']:
         if not request.form.get(i):
             flash('You must fill in a value for %s!' % i, 'error') # could be better
             return redirect('/')
-    id, key = addSite(request.form.get('title'), request.form.get('desc'), request.form.get('docid'))
-    flash('Your memorial was added! <a href="/%s/">Check it out!</a>. Also, please make sure to write this number down: %s' % (id, key))
-    return redirect('/')
+    docid = re.findall('/.*key=(.*[#])', request.form.get('docid'))
+    if len(docid) == 1:
+        docid = docid[0].strip('#')
+    else:
+        flash('That google doc url seems to be invalid!')
+        return redirect('/')
+    id, key = addSite(request.form.get('title'), request.form.get('desc'), docid)
+    if not id:
+        flash('The name is already taken! Try another one...')
+        return redirect('/')
+    flash('Your memorial was added! Its viewable here: <b>http://memorial.hydr0.com/p/%s/</b>. Also, please make sure to write this number down: %s' % (id, key))
+    return redirect('/p/%s' % id)
     #if not checkCaptcha:
     #    flash('Your captcha was incorrect! Try again!', 'error')
     #    return redirect('/')
@@ -82,19 +91,23 @@ def routeCreate():
 @app.route('/p/<page>/refresh/<key>')
 def routePage(page=None, key=None):
     if not page: return redirect('/')
+    page = page.replace(' ', '_').lower()
     if not r.exists('memorial.%s' % page):
         flash('Seems that page doesnt exist! Are you sure you have the right link?', 'error')
         return redirect('/')
     pg = r.hgetall('memorial.%s' % page)
+    print key, pg['secret']
     if not r.exists('memorial.%s.data' % page) or key == pg['secret']:
         data = getData(r.hget('memorial.%s' % page, 'docid'))
         if not data:
             flash('Something seems to be wrong, but we cant access the document resource for that page. Try again later!', 'error')
             return redirect('/')
         if key == pg['secret']:
-            return flash('Refreshed page!', 'success')
+            flash('Refreshed page!', 'success')
         r.set('memorial.%s.data' % page, json.dumps(data))
         r.expire('memorial.%s.data', 120) #2 min expire time
+    if key:
+        return redirect('/p/%s' % page)
     data = json.loads(r.get('memorial.%s.data' % page))
     return render_template('page.html', page=pg, persons=data)
 

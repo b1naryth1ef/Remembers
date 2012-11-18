@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ page['title'] }}{% endblock %}
 {% block content %}
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
   <div class="row-fluid">
     <div class="row12">
       <section id="examples">
@@ -9,6 +10,9 @@
         </div>
         <p class="lead" style="text-align: center;">{{ page['desc']|safe }}</p>
         <p style="text-align: center;"><em><a href="https://docs.google.com/spreadsheet/ccc?key={{ page['docid'] }}">Visit the original document</a></em></p>
+        <p style="text-align: center !important;"><em>
+          <a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet This</a>
+        </em></p>
         <hr>
         <ul class="thumbnails bootstrap-examples">
           {% for person in persons %}
@@ -18,6 +22,7 @@
               </a>
               <h4>{{ person['name'] }}, {{ person['age'] }}</h4>
               <p>{{ person['shortbio'] }}</p>
+              <p>{% if person['link'] %}<em><a href="{{ person['link'] }}">more</a></em>{% endif %}</p>
             </li>
           {% endfor %}
         </ul>
@@ -33,4 +38,5 @@
       modal: true
   });
   </script>
+  
 {% endblock %}
