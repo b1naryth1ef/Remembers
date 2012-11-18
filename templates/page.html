@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ page['title'] }}{% endblock %}
+{% block content %}
+  <div class="row-fluid">
+    <div class="row12">
+      <section id="examples">
+        <div class="page-header">
+          <h1 class="muted" style="text-align: center;">{{ page['title'] }}</h1>
+        </div>
+        <p class="lead" style="text-align: center;">{{ page['desc']|safe }}</p>
+        <p style="text-align: center;"><em><a href="https://docs.google.com/spreadsheet/ccc?key={{ page['docid'] }}">Visit the original document</a></em></p>
+        <hr>
+        <ul class="thumbnails bootstrap-examples">
+          {% for person in persons %}
+            <li  class="span3">
+              <a class="thumbnail" {% if person['photo'] %} title="{{ person['name'] }}" rel="shadowbox[people]" href="{{ person['photo'] }}" {% endif %} >
+                <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="">
+              </a>
+              <h4>{{ person['name'] }}, {{ person['age'] }}</h4>
+              <p>{{ person['shortbio'] }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+  Shadowbox.init({
+      handleOversize: "drag",
+      modal: true
+  });
+  </script>
+{% endblock %}

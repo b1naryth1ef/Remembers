@@ -1,92 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Sandy's Memorial</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Remember those that lost their lives in Hurricane Sandy">
-    <meta name="author" content="B1naryTh1ef">
+{% extends "base.html" %}
+{% block title %}Remembers{% endblock %}
+{% block content %}
+<style>
 
-    <!-- Le styles -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-lightbox.css" rel="stylesheet" >
-    <style type="text/css">
-      body {
-        color: white;
-        background-color: black;
-        padding-top: 20px;
-        padding-bottom: 40px;
-      }
-      .container-narrow {
-        margin: 0 auto;
-        max-width: 700px;
-      }
-      .container-narrow > hr {
-        margin: 30px 0;
-      }
-      .jumbotron {
-        margin: 60px 0;
-        text-align: center;
-      }
-      .cont {
-        margin: 60px 0;
-        text-align: center;
-      }
-      .jumbotron h1 {
-        font-size: 72px;
-        line-height: 1;
-      }
-      .jumbotron .btn {
-        font-size: 21px;
-        padding: 14px 24px;
-      }
-      .marketing {
-        margin: 60px 0;
-      }
-      .marketing p + h4 {
-        margin-top: 28px;
-      }
-    </style>
-    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-    <div class="container-narrow">
-      {% for person in persons %}
-              <div id="light{{ loop.index }}" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
-                <div class='lightbox-content'>
-                  <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="" />
-                </div>
-              </div>
-      {% endfor %}
-      <div class="row-fluid">
-      <div class="row12">
-        <section id="examples">
-          <div class="page-header">
-            <h1 class="muted">Sandy's Memorial</h1>
-          </div>
-          <p class="lead">Take a momement to remember some of the great people that hurricane sandy tragically took from us.</p>
-          <ul class="thumbnails bootstrap-examples">
-            {% for person in persons %}
-              <li class="span3">
-                <a class="thumbnail" data-toggle="lightbox" href="#light{{ loop.index }}">
-                  <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="">
-                </a>
-                <h4>{{ person['name'] }}</h4>
-                <p>{{ person['shortbio'] }}</p>
-              </li>
-            {% endfor %}
-          </ul>
-        </section>
+.popover {
+  text-align: center;
+}
+</style>
+<div class="row-fluid">
+  <div class="row12">
+    <section id="examples">
+      <div class="page-header" style="text-align: center;">
+        <h1>Remembers</h1><h3 class="muted"><em>Memorial Generator</em></h3>
       </div>
+      <p class="lead" style="text-align: center;">A simple site that helps users generate memorial galleries like <a href="/1">this one</a>, a memorial for the victims of Hurricane Sandy. <br /><a href="#reg" role="button" class="btn btn-large" data-toggle="modal" style="text-align:center;">Create Your Own</a></p>
+    </section>
+  </div>
+  <div id="reg" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel" style="color: black;">Create Memorial Site</h3>
     </div>
-    </div> <!-- /container -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/bootstrap-lightbox.js"></script>
+    <div class="modal-body" style="color: black;">
+      <form class="form-horizontal" name="canhelp" action="/create" method="post">
+        <div class="control-group">
+          <label class="control-label">Memorial Title <a rel="popover" data-content="This will be the title other users see when they visit your memorial, make it something short and relevant." data-original-title="The Memorial TItle" class="tooly">(?)</a></label>
+          <div class="controls">
+            <input type="text" name="title" placeholder="My Memorial">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Memorial Doc ID <a rel="popover" data-content="To find your key, look in the url bar for your google document. It will look something like: <br><code>/ccc?key=<b>MYKEYHERE</b>#gid=0</code><br> You want to copy and paste <em>just</em> the bolded part." data-original-title="Finding your Google Doc ID" class="tooly">(?)</a></label>
+          <div class="controls">
+            <input type="text" name="docid" placeholder="0An-A-lITWCO8dG8zWXFQVEtMa05SVzYzWWZRMTRmYUE">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Memorial Description<a rel="popover" data-content="This should be a short blurb describing what your memorial, with links to valid material." data-original-title="Memorial Description" class="tooly">(?)</a></label>
+          <div class="controls">
+            <textarea cols="40" rows="5" name="desc"></textarea>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <!--<script type="text/javascript"src="http://www.google.com/recaptcha/api/challenge?k=6LcT7tESAAAAAEp2I0iBJWDNvrtoxDt0XsQXaKhm"></script>-->
+          </div>
+        </div>
 
-  </body>
-</html>
+        <input type="submit" style="btn btn-primary btn-large; float: right" value="Submit"/>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $('.tooly').popover({ html : true, placement : "left", trigger : "hover"})
+    // $('#tooly').mouseenter(function (){
+    //   $(this).popover('show');
+    // }).mouseleave(function (){
+    //   $(this).popover('hide');
+    // });
+  </script>
+{% endblock %}

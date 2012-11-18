@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- You like reading dat source? How about you read dat open source source over at https://github.com/b1naryth1ef/sandysmemorial. Yeah, that sounds reaaaaaaaaal fine. <3 @b1naryth1ef -->
+    <meta charset="utf-8">
+    <title>{% block title %}Base Template{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Remember those that lost their lives in Hurricane Sandy">
+    <meta name="author" content="B1naryTh1ef">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/static/css/shadowbox.css" rel="stylesheet" >
+    <style type="text/css">
+      body {
+        color: white;
+        background-color: black;
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .cont {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="container-narrow">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div id="alert_block">
+                    {% for category, message in messages %}
+                        <p class='alert alert-{{ category }}'>{{ message|safe }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+        <div class="row12 muted" style="text-align: center;">
+          <p><em>Built by <a href="http://b1naryth1ef.com/">B1naryTh1ef</a> for <a href="http://hurricanehackers.com">HurricaneHackers</a></em></p>
+        </div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript">window.jQuery || document.write('<script type="text/javascript" src="/static/js/jquery.min.js"><\/script>')</script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/shadowbox.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
+
+
