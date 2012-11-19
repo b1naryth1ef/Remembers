@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'rawr' #not using session, so doesnt need to be uber secret
 
 r = Redis(host='hydr0.com', db=1)
-url = "http://spreadsheets.google.com/feeds/list/%s/1/public/basic?alt=json"
+url = "http://spreadsheets.google.com/feeds/list/%s?alt=json"
 orgurl = "https://docs.google.com/spreadsheet/ccc?key=%s"
 captcha_priv = os.getenv('CAPTCHAPRIV', None)
 
@@ -44,9 +44,6 @@ def addSite(title, desc, docid):
 def getData(i):
     req = requests.get(url % i)
     if req.status_code != 200:
-        print url % i
-        print req.status_code
-        print req.content
         return None
 
     result = []
