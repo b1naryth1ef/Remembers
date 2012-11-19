@@ -71,6 +71,7 @@ def routeCreate():
             flash('You must fill in a value for %s!' % i, 'error') # could be better
             return redirect('/')
     docid = re.findall('/.*key=(.*[#])', request.form.get('docid'))
+    print request.form.get('docid'), docid
     if len(docid) == 1:
         docid = docid[0].strip('#')
     else:
@@ -95,7 +96,6 @@ def routePage(page=None, key=None):
         flash('Seems that page doesnt exist! Are you sure you have the right link?', 'error')
         return redirect('/')
     pg = r.hgetall('memorial.%s' % page)
-    print key, pg['secret']
     if not r.exists('memorial.%s.data' % page) or key == pg['secret']:
         data = getData(r.hget('memorial.%s' % page, 'docid'))
         if not data:
