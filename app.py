@@ -70,10 +70,9 @@ def routeCreate():
         if not request.form.get(i):
             flash('You must fill in a value for %s!' % i, 'error') # could be better
             return redirect('/')
-    docid = re.findall('/.*key=(.*[#])', request.form.get('docid'))
-    print request.form.get('docid'), docid
+    docid = re.findall('/.*key=(.*)', request.form.get('docid'))
     if len(docid) == 1:
-        docid = docid[0].strip('#')
+        docid = docid[0].split('#')[0]
     else:
         flash('That google doc url seems to be invalid!')
         return redirect('/')
