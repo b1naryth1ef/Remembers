@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'rawr' #not using session, so doesnt need to be uber secret
 
 r = Redis(host='hydr0.com', db=1)
-url = "http://spreadsheets.google.com/feeds/list/%s?alt=json"
+url = "http://spreadsheets.google.com/feeds/list/%s/1/public/basic?alt=json"
 orgurl = "https://docs.google.com/spreadsheet/ccc?key=%s"
 captcha_priv = os.getenv('CAPTCHAPRIV', None)
 
@@ -44,6 +44,7 @@ def addSite(title, desc, docid):
 def getData(i):
     req = requests.get(url % i)
     if req.status_code != 200:
+        print 'Error: ', url % i
         return None
 
     result = []
@@ -72,7 +73,8 @@ def routeCreate():
             return redirect('/')
     docid = re.findall('/.*key=(.*)', request.form.get('docid'))
     if len(docid) == 1:
-        docid = docid[0].split('#')[0]
+        docid = re.sub('&.*', '', docid[0])
+        docid = docid.split('#')[0]
     else:
         flash('That google doc url seems to be invalid!')
         return redirect('/')
