@@ -44,6 +44,9 @@ def addSite(title, desc, docid):
 def getData(i):
     req = requests.get(url % i)
     if req.status_code != 200:
+        print url % i
+        print req.status_code
+        print req.content
         return None
 
     result = []
