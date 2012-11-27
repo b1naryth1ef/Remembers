@@ -20,7 +20,7 @@
               <a class="thumbnail" {% if person['photo'] %} title="{{ person['name'] }}" rel="shadowbox[people]" href="{{ person['photo'] }}" {% endif %} >
                 <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="">
               </a>
-              <h4>{{ person['name'] }}, {{ person['age'] }}</h4>
+              <h4>{{ person['name'] }}{% if person['age'] %}, {{ person['age'] }}{% endif %}</h4>
               <p>{{ person['shortbio'] }}</p>
               <p>{% if person['link'] %}<em><a href="{{ person['link'] }}">more</a></em>{% endif %}</p>
             </li>
