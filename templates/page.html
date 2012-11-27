@@ -16,7 +16,7 @@
         <hr>
         <ul class="thumbnails bootstrap-examples">
           {% for person in persons %}
-            <li  class="span3">
+            <li class="span3" id="entry_{{ person['id'] }}">
               <a class="thumbnail" {% if person['photo'] %} title="{{ person['name'] }}" rel="shadowbox[people]" href="{{ person['photo'] }}" {% endif %} >
                 <img src="{% if person['photo'] %}{{ person['photo'] }}{% else %}/static/img/unk.gif{% endif %}" alt="">
               </a>
@@ -38,5 +38,4 @@
       modal: true
   });
   </script>
-  
 {% endblock %}

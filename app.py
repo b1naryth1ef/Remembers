@@ -1,14 +1,14 @@
 from flask import Flask, render_template, redirect, flash, request
 from redis import Redis
-import requests, json, random, sys, os, re
+import requests, random, os, re
 
 app = Flask(__name__)
-app.secret_key = 'rawr' #not using session, so doesnt need to be uber secret
+app.secret_key = 'rawr' #We dont use this for cookies/etc so it does not need to be secure
 
-r = Redis(host='hydr0.com', db=1)
-url = "http://spreadsheets.google.com/feeds/list/%s/1/public/basic?alt=json"
-orgurl = "https://docs.google.com/spreadsheet/ccc?key=%s"
-captcha_priv = os.getenv('CAPTCHAPRIV', None)
+r = Redis(host='hydr0.com', db=1) #Redis connection
+url = "http://spreadsheets.google.com/feeds/list/%s/1/public/basic?alt=json" #URL for google docs json API
+orgurl = "https://docs.google.com/spreadsheet/ccc?key=%s" #URL for google docs direct url
+captcha_priv = os.getenv('CAPTCHAPRIV', None) #We're not using captcha currently
 
 #Data key: ([] == hashkey)
 #memorial.<id>.data
@@ -17,7 +17,7 @@ captcha_priv = os.getenv('CAPTCHAPRIV', None)
 #memorial.<id>[]title
 #memorial.<id>[]desc
 
-def checkCaptcha():
+def checkCaptcha(): #Not used (yet)
     if not captcha_priv: return True
     k = {
         'privatekey': captcha_priv,
@@ -28,12 +28,10 @@ def checkCaptcha():
     r = requests.get('http://www.google.com/recaptcha/api/verify', params=k)
     return r.text.startswith('true')
 
-def check(id): return requests.get(url % id).status_code == 200
-
 def addSite(title, desc, docid):
     if r.exists('memorial.%s' % title.replace(' ', '_').lower()):
         return None, None
-    secret = random.randint(111111, 999999) #not really that secret, but screw it!
+    secret = random.randint(111111, 999999) #6! possibilites is enough. Right?
     s = {'docid': docid,
         'secret': secret,
         'title': title,
@@ -48,7 +46,7 @@ def getData(i):
         return None
 
     result = []
-    for i in req.json['feed']['entry']:
+    for num, i in enumerate(req.json['feed']['entry']):
         c = i['content']['$t'].split(', ')
         li = {'photo': None}
         for e in c:
@@ -56,10 +54,9 @@ def getData(i):
             if len(v) == 2:
                 li[v[0]] = v[1]
         li['name'] = i['title']['$t']
+        li['id'] = num+2 #This is basically the row ID (+1 for 0-inc, +1 for header)
         result.append(li)
     return result
-
-def reloadData(i): pass
 
 @app.route('/')
 def routeIndex():
@@ -69,14 +66,14 @@ def routeIndex():
 def routeCreate():
     for i in ['title', 'docid', 'desc']:
         if not request.form.get(i):
-            flash('You must fill in a value for %s!' % i, 'error') # could be better
+            flash('You must fill in a value for %s!' % i.title(), 'error') #Meh, could be improved
             return redirect('/')
-    docid = re.findall('/.*key=(.*)', request.form.get('docid'))
-    if len(docid) == 1:
+    docid = re.findall('/.*key=(.*)', request.form.get('docid')) #Grabs the DOCID (this regex is a bit iffy)
+    if len(docid) == 1: #Did the regex find something?
         docid = re.sub('&.*', '', docid[0])
         docid = docid.split('#')[0]
     else:
-        flash('That google doc url seems to be invalid!')
+        flash('That google doc url seems to be invalid! (Make sure you paste from the PUBLISHED google doc!', 'error')
         return redirect('/')
     id, key = addSite(request.form.get('title'), request.form.get('desc'), docid)
     if not id:
@@ -84,7 +81,7 @@ def routeCreate():
         return redirect('/')
     flash('Your memorial was added! Its viewable here: <b>http://memorial.hydr0.com/p/%s/</b>. Also, please make sure to write this number down: %s' % (id, key), 'success')
     return redirect('/p/%s' % id)
-    #if not checkCaptcha:
+    #if not checkCaptcha: #Captcha is disabled currently
     #    flash('Your captcha was incorrect! Try again!', 'error')
     #    return redirect('/')
 
@@ -104,20 +101,13 @@ def routePage(page=None, key=None):
             return redirect('/')
         if key == pg['secret']:
             flash('Refreshed page!', 'success')
-        r.set('memorial.%s.data' % page, json.dumps(data))
-        r.expire('memorial.%s.data', 120) #2 min expire time
-    if key:
-        return redirect('/p/%s' % page)
-    data = json.loads(r.get('memorial.%s.data' % page))
-    return render_template('page.html', page=pg, persons=data)
+        view = render_template('page.html', page=pg, persons=data)
+        r.set('memorial.%s.data' % page, view)
+        r.expire('memorial.%s.data' % page, 120) #Expire the cache every two mins (could be adjusted)
+        if key: return redirect('/p/%s' % page)
+    else:
+        view = r.get('memorial.%s.data' % page)
+    return view
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 2 and sys.argv[1] == 'lol':
-        desc = """
-        In memory of those who lost their lives to Hurricane Sandy.<br />
-        Please help us improve this memorial. Click the following link to edit the spreadsheet; for example, you can update the bio column:<br /> <a href="http://bit.ly/hh-memorial-sheet">HH Memorial Sheet</a>.<br />
-        Special thanks to @whitneyhess for all her work compiling <a href="http://whitneyhess.com/blog/2012/11/05/the-people-who-were-killed-by-hurricane-sandy/">this information</a>.
-        """
-        print addSite('Hurricane Sandy Memorial Project', desc, "0An-A-lITWCO8dG8zWXFQVEtMa05SVzYzWWZRMTRmYUE")
-    else:
-        app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)

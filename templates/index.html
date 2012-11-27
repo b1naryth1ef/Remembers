@@ -13,7 +13,10 @@
       <div class="page-header" style="text-align: center;">
         <h1>Remembers</h1><h3 class="muted"><em>Memorial Generator</em></h3>
       </div>
-      <p class="lead" style="text-align: center;">A simple site that helps users generate memorial galleries like <a href="/p/hurricane_sandy_memorial_project/">this one</a>, a memorial for the victims of Hurricane Sandy. <br /><a href="#reg" role="button" class="btn btn-large" data-toggle="modal" style="text-align:center;">Create Your Own</a></p>
+      <p class="lead" style="text-align: center;">
+        Remembers helps you create a simple memorial gallery (like <a href="/p/hurricane_sandy_memorial_project/">this one</a>). Remembers constantly updates from a google docs spreadsheet that you control, meaning you can easily crowdsource the editing of content on your memorial or keep it closed.
+        <br /><a href="#reg" role="button" class="btn btn-large" data-toggle="modal" style="text-align:center;">Create Your Own</a>
+      </p>
     </section>
   </div>
   <div id="reg" class="modal hide fade" tabindex="-1" role="dialog">
@@ -22,9 +25,10 @@
       <h3 id="myModalLabel" style="color: black;">Create Memorial Site</h3>
     </div>
     <div class="modal-body" style="color: black;">
-      <p><a href="https://docs.google.com/spreadsheet/ccc?key=0An-A-lITWCO8dGdQWk5Wb1ZsMUZzMmdiWHdMWW9DMHc#gid=0">Example SpreadSheet</a></p>
+      
       <form class="form-horizontal" name="canhelp" action="/create" method="post">
         <div class="control-group">
+          <p><a href="https://docs.google.com/spreadsheet/ccc?key=0An-A-lITWCO8dGdQWk5Wb1ZsMUZzMmdiWHdMWW9DMHc#gid=0">Example SpreadSheet</a></p>
           <label class="control-label">Memorial Title <a rel="popover" data-content="This will be the title other users see when they visit your memorial, make it something short and relevant." data-original-title="The Memorial TItle" class="tooly">(?)</a></label>
           <div class="controls">
             <input type="text" name="title" placeholder="My Memorial">
