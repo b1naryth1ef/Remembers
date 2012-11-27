@@ -52,8 +52,8 @@ def getData(i):
         for e in c:
             v = e.split(': ')
             if len(v) == 2:
-                li[v[0]] = v[1]
-        li['name'] = i['title']['$t']
+                li[v[0]] = v[1].strip()
+        li['name'] = i['title']['$t'].strip()
         li['id'] = num+2 #This is basically the row ID (+1 for 0-inc, +1 for header)
         result.append(li)
     return result
